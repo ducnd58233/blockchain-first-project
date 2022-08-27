@@ -1,17 +1,4 @@
 {
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js, json, sol}": [
-      "prettier --write",
-      "eslint --fix",
-      "npx hardhat test",
-      "git add"
-    ]
-  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.1.1",
     "@nomiclabs/hardhat-etherscan": "^3.1.0",
@@ -29,13 +16,11 @@
     "ethers": "^5.7.0",
     "hardhat": "^2.10.2",
     "hardhat-gas-reporter": "^1.0.8",
-    "husky": "^8.0.1",
-    "lint-staged": "^13.0.3",
     "prettier": "2.7.1",
     "prettier-plugin-solidity": "^1.0.0-beta.13",
     "solhint": "^3.3.7",
-    "solidity-coverage": "^0.6.7"
-    },
+    "solidity-coverage": "^0.7.21"
+  },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.3"
   }
