@@ -19,7 +19,4 @@ module.exports = {
       globals: {task: true},
     },
   ],
-  rules: {
-    'no-console': 'off',
-  },
 }
