@@ -32,7 +32,10 @@ contract Gold is ERC20, Pausable, AccessControl {
     uint256 amount
   ) internal override whenNotPaused {
     require(_blackList[from] == false, "Gold: account sender was on blacklist");
-    require(_blackList[to] == false, "Gold: account recipient was on blacklist");
+    require(
+      _blackList[to] == false,
+      "Gold: account recipient was on blacklist"
+    );
     super._beforeTokenTransfer(from, to, amount);
   }
 
