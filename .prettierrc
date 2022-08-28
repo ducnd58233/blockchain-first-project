@@ -12,8 +12,12 @@
       }
     },
     {
-      "files": ["*.js", ".json"],
+      "files": [
+        "*.js",
+        ".json"
+      ],
       "options": {
+        "printWidth": 80,
         "tabWidth": 2,
         "useTabs": false,
         "singleQuote": false,
