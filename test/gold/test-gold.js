@@ -1,21 +1,19 @@
-const { inputToConfig } = require("@ethereum-waffle/compiler");
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+const {expect} = require("chai")
+const {ethers} = require("hardhat")
 
 describe("Gold", function () {
   let [accountA, accountB, accountC] = []
   let token
-  let amount = ethers.utils.parseUnits("100", "ether")
-  let address0 = "0x000000000000000000000000000000000000000"
-  let totalSupply = ethers.utils.parseUnits("1000000", "ether")
+  const amount = ethers.utils.parseUnits("100", "ether")
+  const totalSupply = ethers.utils.parseUnits("1000000", "ether")
   beforeEach(async () => {
-    [accountA, accountB, accountC] = await ethers.getSigners()
+    ;[accountA, accountB, accountC] = await ethers.getSigners()
     const Token = await ethers.getContractFactory("Gold")
     token = await Token.deploy()
     await token.deployed()
   })
 
-  describe("common", function() {
+  describe("common", function () {
     it("total supply should return right value", async function () {
       expect(await token.totalSupply()).to.be.equal(totalSupply)
     })
@@ -29,7 +27,9 @@ describe("Gold", function () {
     })
 
     it("allowance of account A to account B should return right value", async function () {
-      expect(await token.allowance(accountA.address, accountB.address)).to.be.equal(0)
+      expect(
+        await token.allowance(accountA.address, accountB.address)
+      ).to.be.equal(0)
     })
   })
 
@@ -43,10 +43,14 @@ describe("Gold", function () {
       await expect(token.pause()).to.be.revertedWith("Pausable: paused")
     })
 
-    it("should pause contract correctly", async function() {
+    it("should pause contract correctly", async function () {
       const pauseTx = await token.pause()
-      await expect(pauseTx).to.be.emit(token, "Paused").withArgs(accountA.address)
-      await expect(token.transfer(accountB.address, amount)).to.be.revertedWith("Pausable: paused")
+      await expect(pauseTx)
+        .to.be.emit(token, "Paused")
+        .withArgs(accountA.address)
+      await expect(token.transfer(accountB.address, amount)).to.be.revertedWith(
+        "Pausable: paused"
+      )
     })
   })
 
@@ -64,39 +68,53 @@ describe("Gold", function () {
       await expect(token.unpause()).to.be.revertedWith("Pausable: not paused")
     })
 
-    it("should unpause contract correctly", async function() {
+    it("should unpause contract correctly", async function () {
       const unpauseTx = await token.unpause()
-      await expect(unpauseTx).to.be.emit(token, "Unpaused").withArgs(accountA.address)
-      let transferTx = await token.transfer(accountB.address, amount)
-      await expect(transferTx).to.emit(token, "Transfer").withArgs(accountA.address, accountB.address, amount)
+      await expect(unpauseTx)
+        .to.be.emit(token, "Unpaused")
+        .withArgs(accountA.address)
+      const transferTx = await token.transfer(accountB.address, amount)
+      await expect(transferTx)
+        .to.emit(token, "Transfer")
+        .withArgs(accountA.address, accountB.address, amount)
     })
   })
 
   describe("addToBlacklist()", function () {
     it("should revert in case add sender to blacklist", async function () {
-      await expect(token.addToBlacklist(accountA.address)).to.be.revertedWith("Gold: must not add sender to blacklist")
+      await expect(token.addToBlacklist(accountA.address)).to.be.revertedWith(
+        "Gold: must not add sender to blacklist"
+      )
     })
 
     it("should revert if account has been added to blacklist", async function () {
       await token.addToBlacklist(accountB.address)
-      await expect(token.addToBlacklist(accountB.address)).to.be.revertedWith("Gold: account was on blacklist")
+      await expect(token.addToBlacklist(accountB.address)).to.be.revertedWith(
+        "Gold: account was on blacklist"
+      )
     })
 
     it("should revert if not admin role", async function () {
-      await expect(token.connect(accountB.address).addToBlacklist(accountC.address)).to.be.reverted
+      await expect(
+        token.connect(accountB.address).addToBlacklist(accountC.address)
+      ).to.be.reverted
     })
 
     it("should add to blacklist correctly", async function () {
       token.transfer(accountB.address, amount)
       token.transfer(accountC.address, amount)
       await token.addToBlacklist(accountB.address)
-      await expect(token.connect(accountB).transfer(accountC.address, amount)).to.be.revertedWith("Gold: account sender was on blacklist")
-      await expect(token.connect(accountC).transfer(accountB.address, amount)).to.be.revertedWith("Gold: account recipient was on blacklist")
+      await expect(
+        token.connect(accountB).transfer(accountC.address, amount)
+      ).to.be.revertedWith("Gold: account sender was on blacklist")
+      await expect(
+        token.connect(accountC).transfer(accountB.address, amount)
+      ).to.be.revertedWith("Gold: account recipient was on blacklist")
     })
   })
 
   describe("removeFromBlacklist()", function () {
-    beforeEach(async() => {
+    beforeEach(async () => {
       token.transfer(accountB.address, amount)
       token.transfer(accountC.address, amount)
       await token.addToBlacklist(accountB.address)
@@ -104,17 +122,23 @@ describe("Gold", function () {
 
     it("should revert if account has not been added to blacklist", async function () {
       await token.removeFromBlacklist(accountB.address)
-      await expect(token.removeFromBlacklist(accountB.address)).to.be.revertedWith("Gold: account was not on blacklist")
+      await expect(
+        token.removeFromBlacklist(accountB.address)
+      ).to.be.revertedWith("Gold: account was not on blacklist")
     })
 
     it("should revert if not admin role", async function () {
-      await expect(token.connect(accountB.address).removeFromBlacklist(accountC.address)).to.be.reverted
+      await expect(
+        token.connect(accountB.address).removeFromBlacklist(accountC.address)
+      ).to.be.reverted
     })
 
     it("should remove from blacklist correctly", async function () {
       await token.removeFromBlacklist(accountB.address)
-      let transferTx = await token.transfer(accountB.address, amount)
-      await expect(transferTx).to.emit(token, "Transfer").withArgs(accountA.address, accountB.address, amount)
+      const transferTx = await token.transfer(accountB.address, amount)
+      await expect(transferTx)
+        .to.emit(token, "Transfer")
+        .withArgs(accountA.address, accountB.address, amount)
     })
   })
 })

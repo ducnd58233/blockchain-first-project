@@ -45,7 +45,7 @@ contract SampleToken is IERC20 {
     _balances[recipient] += amount;
     emit Transfer(sender, recipient, amount);
     return true;
-}
+  }
 
   function approve(address spender, uint256 amount)
     public
